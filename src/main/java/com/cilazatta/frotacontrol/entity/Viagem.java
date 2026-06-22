@@ -71,6 +71,10 @@ public class Viagem extends BaseEntity {
     @Column(length = 500)
     private String observacao;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "empresa_id", nullable = false)
+    private Empresa empresa;
+    
 	@OneToMany(mappedBy = "viagem", cascade = CascadeType.PERSIST)
 	private List<ViagemParticipante> passageiros = new ArrayList<>();
 
