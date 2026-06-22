@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "viagem_foto")
+@Table(name = "viagem_foto_painel")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,6 +38,9 @@ public class ViagemFotoPainel extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TipoFotoPainel tipoFoto;
+    
+    @Column(length = 500)
+    private String justificativa;
 
     @Column(nullable = false)
     private LocalDateTime dataHora;

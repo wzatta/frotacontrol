@@ -16,4 +16,6 @@ public class ViagemFotoPainelRequestDto {
     private Boolean validado;
 
     private TipoFotoPainel tipoFoto;
+    
+    private String justificativa;
 }

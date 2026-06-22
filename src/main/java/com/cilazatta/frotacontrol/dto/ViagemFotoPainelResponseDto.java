@@ -18,6 +18,8 @@ public class ViagemFotoPainelResponseDto {
     private Boolean validado;
 
     private TipoFotoPainel tipoFoto;
+    
+    private String justificativa;
 
     private LocalDateTime dataHora;
 }
