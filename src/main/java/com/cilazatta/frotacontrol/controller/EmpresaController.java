@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,10 +19,12 @@ import com.cilazatta.frotacontrol.dto.EmpresaResponseDto;
 import com.cilazatta.frotacontrol.service.EmpresaService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/empresas")
+@Validated
 @RequiredArgsConstructor
 public class EmpresaController {
 
@@ -41,7 +44,7 @@ public class EmpresaController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<EmpresaResponseDto> buscarPorId(@PathVariable Long id) {
+	public ResponseEntity<EmpresaResponseDto> buscarPorId(@PathVariable @Positive(message = "Id deve ser maior que zero") Long id) {
 
 		return ResponseEntity.ok(service.buscarPorId(id));
 	}

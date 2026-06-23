@@ -7,73 +7,71 @@ import com.cilazatta.frotacontrol.dto.VeiculoResponseDto;
 import com.cilazatta.frotacontrol.entity.Veiculo;
 
 @Component
-public class VeiculoMapper implements BaseMapper<Veiculo, VeiculoRequestDto, VeiculoResponseDto> {
+public class VeiculoMapper implements BaseMapper<Veiculo, VeiculoRequestDto, VeiculoResponseDto, VeiculoRequestDto> {
 
-	  public Veiculo toEntity(VeiculoRequestDto request) {
+	public Veiculo toEntity(VeiculoRequestDto request) {
 
-	        Veiculo veiculo = new Veiculo();
+		Veiculo veiculo = new Veiculo();
 
-	        veiculo.setPlaca(request.getPlaca());
-	        veiculo.setMarca(request.getMarca());
-	        veiculo.setModelo(request.getModelo());
+		veiculo.setTag(request.getTag());
+		veiculo.setPlaca(request.getPlaca());
+		veiculo.setMarca(request.getMarca());
+		veiculo.setModelo(request.getModelo());
 
-	        veiculo.setAno(request.getAno());
+		veiculo.setAno(request.getAno());
 
-	        veiculo.setCapacidadeTotal(request.getCapacidadeTotal());
+		veiculo.setCapacidadeTotal(request.getCapacidadeTotal());
 
-	        veiculo.setKmAtual(
-	                request.getKmAtual() == null ? 0L : request.getKmAtual()
-	        );
+		veiculo.setKmAtual(request.getKmAtual() == null ? 0L : request.getKmAtual());
 
-	        veiculo.setAtivo(
-	                request.getAtivo() == null ? true : request.getAtivo()
-	        );
+		veiculo.setAtivo(request.getAtivo() == null ? true : request.getAtivo());
 
-	        return veiculo;
-	    }
+		return veiculo;
+	}
 
-	    public VeiculoResponseDto toResponse(Veiculo veiculo) {
+	public VeiculoResponseDto toResponse(Veiculo veiculo) {
 
-	        VeiculoResponseDto response = new VeiculoResponseDto();
+		VeiculoResponseDto response = new VeiculoResponseDto();
 
-	        response.setId(veiculo.getId());
+		response.setId(veiculo.getId());
 
-	        response.setPlaca(veiculo.getPlaca());
-	        response.setMarca(veiculo.getMarca());
-	        response.setModelo(veiculo.getModelo());
+		response.setTag(veiculo.getTag());
+		response.setPlaca(veiculo.getPlaca());
+		response.setMarca(veiculo.getMarca());
+		response.setModelo(veiculo.getModelo());
 
-	        response.setAno(veiculo.getAno());
+		response.setAno(veiculo.getAno());
 
-	        response.setCapacidadeTotal(veiculo.getCapacidadeTotal());
+		response.setCapacidadeTotal(veiculo.getCapacidadeTotal());
 
-	        response.setKmAtual(veiculo.getKmAtual());
+		response.setKmAtual(veiculo.getKmAtual());
 
-	        response.setAtivo(veiculo.getAtivo());
+		response.setAtivo(veiculo.getAtivo());
 
-	        response.setDataCadastro(veiculo.getDataCadastro());
+		response.setDataCadastro(veiculo.getDataCadastro());
 
-	        return response;
-	    }
+		return response;
+	}
 
-		@Override
-		public void updateEntity(Veiculo entity, VeiculoRequestDto request) {
-			
-			entity.setPlaca(request.getPlaca());
-		    entity.setMarca(request.getMarca());
-		    entity.setModelo(request.getModelo());
+	@Override
+	public void updateEntity(Veiculo entity, VeiculoRequestDto request) {
 
-		    entity.setAno(request.getAno());
-		    entity.setCapacidadeTotal(request.getCapacidadeTotal());
+		//entity.setTag(request.getTag());
+		//entity.setPlaca(request.getPlaca());
+		entity.setMarca(request.getMarca());
+		entity.setModelo(request.getModelo());
 
-		    if (request.getKmAtual() != null) {
-		        entity.setKmAtual(request.getKmAtual());
-		    }
+		entity.setAno(request.getAno());
+		entity.setCapacidadeTotal(request.getCapacidadeTotal());
 
-		    if (request.getAtivo() != null) {
-		        entity.setAtivo(request.getAtivo());
-		    }
-			
+		if (request.getKmAtual() != null) {
+		//	entity.setKmAtual(request.getKmAtual());
 		}
-	
-	
+
+		if (request.getAtivo() != null) {
+			entity.setAtivo(request.getAtivo());
+		}
+
+	}
+
 }

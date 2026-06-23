@@ -7,7 +7,9 @@ import lombok.Data;
 @Data
 public class VeiculoResponseDto {
 
-	  private Long id;
+		private Long id;
+
+		private Short tag;
 
 	    private String placa;
 

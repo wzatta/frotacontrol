@@ -33,6 +33,8 @@ public class Funcionario extends BaseEntity {
     private String bairro;
 
     private String cidade;
+    
+    private String uf;
 
     private String cep;
 

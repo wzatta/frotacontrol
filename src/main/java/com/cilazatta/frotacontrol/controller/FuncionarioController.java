@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cilazatta.frotacontrol.dto.FuncionarioRequestDto;
+import com.cilazatta.frotacontrol.dto.FuncionarioRequestUpdateDto;
 import com.cilazatta.frotacontrol.dto.FuncionarioResponseDto;
 import com.cilazatta.frotacontrol.service.FuncionarioService;
 
@@ -51,7 +52,7 @@ public class FuncionarioController {
     @PutMapping("/{id}")
     public FuncionarioResponseDto atualizar(
             @PathVariable Long id,
-            @Valid @RequestBody FuncionarioRequestDto request) {
+            @Valid @RequestBody FuncionarioRequestUpdateDto request) {
 
         return service.atualizar(id, request);
     }

@@ -1,16 +1,15 @@
 package com.cilazatta.frotacontrol.dto;
 
-import java.time.LocalDateTime;
-
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class FuncionarioResponseDto {
-	 
-	    private Long id;
+public class FuncionarioRequestUpdateDto {
 
+	  @NotBlank
 	    private String matricula;
 
+	    @NotBlank
 	    private String nome;
 
 	    private String telefone;
@@ -28,13 +27,7 @@ public class FuncionarioResponseDto {
 	    private String uf;
 
 	    private String cep;
-
+	 
 	    private Boolean ativo;
-	    
-	    private String cnpj;
-	    
-	    private String razaoSocial;
-
-	    private LocalDateTime dataCadastro;
 
 }
