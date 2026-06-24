@@ -54,11 +54,11 @@ public class VeiculoCondutorService {
 //			});
 		}
 
-		long contador = this.repository.countByVeiculoIdAndAtivoTrue(request.getVeiculoId());
-		
-		if(contador >= 1) {
-			throw new BusinessException("Limite de Motorista Excedido para o Veiculo");
-			
+		if(repository.countByVeiculoIdAndAtivoTrue(
+		        request.getVeiculoId()) >= 10) {
+
+		    throw new BusinessException(
+		            "Veículo já possui o limite máximo de condutores.");
 		}
 		
 		VeiculoCondutor entity = new VeiculoCondutor();

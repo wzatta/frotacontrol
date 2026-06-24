@@ -8,30 +8,39 @@ import com.cilazatta.frotacontrol.dto.VeiculoRequestDto;
 import com.cilazatta.frotacontrol.dto.VeiculoResponseDto;
 import com.cilazatta.frotacontrol.entity.Empresa;
 import com.cilazatta.frotacontrol.entity.Veiculo;
+import com.cilazatta.frotacontrol.enums.Role;
 import com.cilazatta.frotacontrol.exeptions.BusinessException;
 import com.cilazatta.frotacontrol.exeptions.ResourceNotFoundException;
 import com.cilazatta.frotacontrol.mapper.VeiculoMapper;
 import com.cilazatta.frotacontrol.repository.EmpresaRepository;
 import com.cilazatta.frotacontrol.repository.VeiculoRepository;
+import com.cilazatta.frotacontrol.security.service.UsuarioLogadoService;
 
 @Service
 public class VeiculoService {
 
 	private final VeiculoRepository repository;
 	private final EmpresaRepository empresaRepository;
+	private final UsuarioLogadoService userLogado;
 	private final VeiculoMapper mapper;
 
 	public VeiculoService(VeiculoRepository repository,
+			UsuarioLogadoService userLogado,
 			EmpresaRepository empresaRepository, VeiculoMapper mapper) {
 		super();
 		this.repository = repository;
 		this.empresaRepository = empresaRepository;
+		this.userLogado = userLogado;
 		this.mapper = mapper;
 	}
 
 	public VeiculoResponseDto salvar(VeiculoRequestDto request) {
 		
-		Empresa empresa = empresaRepository.findById(request.getEmpresaId())
+		if (!userLogado.hasRole(Role.ROLE_GESTOR_ROTA)) {
+		    throw new RuntimeException("Acesso negado");
+		}
+		
+		Empresa empresa = empresaRepository.findById(userLogado.getEmpresaId())
 				.orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada"));
 
 
@@ -67,13 +76,9 @@ public class VeiculoService {
 		return mapper.toResponse(buscarEntidadeByEmpresa(id, empresaId));
 	}
 
+
 	public List<VeiculoResponseDto> listar() {
-
-		return repository.findAll().stream().map(mapper::toResponse).toList();
-	}
-
-	public List<VeiculoResponseDto> listar(Long empresaId) {
-		
+		Long empresaId = userLogado.getEmpresaId(); 
 		return repository.findByEmpresaId(empresaId).stream().map(mapper::toResponse).toList();
 	}
 
