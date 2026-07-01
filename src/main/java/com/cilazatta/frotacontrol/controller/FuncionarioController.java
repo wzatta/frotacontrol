@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cilazatta.frotacontrol.dto.FuncionarioRequestDto;
 import com.cilazatta.frotacontrol.dto.FuncionarioRequestUpdateDto;
 import com.cilazatta.frotacontrol.dto.FuncionarioResponseDto;
+import com.cilazatta.frotacontrol.dto.FuncionarioRquestByCepDto;
 import com.cilazatta.frotacontrol.service.FuncionarioService;
 
 import jakarta.validation.Valid;
@@ -34,6 +35,14 @@ public class FuncionarioController {
             @Valid @RequestBody FuncionarioRequestDto request) {
 
         return service.salvar(request);
+    }
+    
+    @PostMapping("/via-cep")
+    @ResponseStatus(HttpStatus.CREATED)
+    public FuncionarioResponseDto salvarViaCep(
+            @Valid @RequestBody FuncionarioRquestByCepDto request) {
+
+        return service.salvarViaCep(request);
     }
 
     @GetMapping

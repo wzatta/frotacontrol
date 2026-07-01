@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequestDto {
+public class UsuarioRequestDto {
 	
 	
 	@NotBlank(message = "Nome é obrigatório")

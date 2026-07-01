@@ -42,17 +42,15 @@ public class ViagemMapper {
 
 		dto.setTipoViagem(entity.getTipoViagem());
 
-		dto.setFinalidade(entity.getFinalidade());
-
 		dto.setKmInicial(entity.getKmInicial());
 
 		dto.setKmFinal(entity.getKmFinal());
 
 		dto.setStatus(entity.getStatus());
 
-		dto.setDataHoraSaida(entity.getDataHoraSaida());
+		dto.setDataHoraAbertura(entity.getDataHoraAbertura());
 
-		dto.setDataHoraChegada(entity.getDataHoraChegada());
+		dto.setDataHoraEncerramento(entity.getDataHoraEncerramento());
 
 		if (entity.getPassageiros() != null) {
 

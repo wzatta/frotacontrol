@@ -1,7 +1,11 @@
 package com.cilazatta.frotacontrol.entity;
 
+import com.cilazatta.frotacontrol.enums.VeiculoStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -50,6 +54,9 @@ public class Veiculo extends BaseEntity {
 
     @Column(nullable = false)
     private Boolean ativo = true;
+    
+    @Enumerated(EnumType.STRING)
+    private VeiculoStatus status = VeiculoStatus.DISPONIVEL;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "empresa_id", nullable = false)

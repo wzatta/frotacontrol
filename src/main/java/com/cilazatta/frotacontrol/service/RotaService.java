@@ -1,149 +1,132 @@
 package com.cilazatta.frotacontrol.service;
 
-
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cilazatta.frotacontrol.dto.RotaFuncionarioRequestDto;
 import com.cilazatta.frotacontrol.dto.RotaRequestDto;
 import com.cilazatta.frotacontrol.dto.RotaResponseDto;
-import com.cilazatta.frotacontrol.entity.Funcionario;
+import com.cilazatta.frotacontrol.entity.Empresa;
 import com.cilazatta.frotacontrol.entity.Rota;
-import com.cilazatta.frotacontrol.entity.RotaFuncionario;
+import com.cilazatta.frotacontrol.enums.Role;
+import com.cilazatta.frotacontrol.exeptions.AccessDeniedException;
 import com.cilazatta.frotacontrol.exeptions.BusinessException;
 import com.cilazatta.frotacontrol.exeptions.ResourceNotFoundException;
 import com.cilazatta.frotacontrol.mapper.RotaMapper;
-import com.cilazatta.frotacontrol.repository.FuncionarioRepository;
+import com.cilazatta.frotacontrol.repository.EmpresaRepository;
 import com.cilazatta.frotacontrol.repository.RotaRepository;
+import com.cilazatta.frotacontrol.security.service.UsuarioLogadoService;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class RotaService  {
+public class RotaService {
 
-    private final RotaRepository rotaRepository;
+	private final RotaRepository rotaRepository;
 
-    private final FuncionarioRepository funcionarioRepository;
+	private final UsuarioLogadoService userLogado;
 
-    private final RotaMapper rotaMapper;
+	private final EmpresaRepository empresaRepository;
 
-    public RotaResponseDto salvar(RotaRequestDto request) {
+	private final RotaMapper rotaMapper;
 
-        if (rotaRepository.existsByDescricaoIgnoreCase(
-                request.getDescricao())) {
+	public RotaResponseDto salvar(RotaRequestDto request) {
+		
+		validarResponsabilidadeDoUsuarioLogado();
 
-            throw new BusinessException(
-                    "Já existe uma rota com esta descrição.");
-        }
+		Long empresaId = userLogado.getEmpresaId();
 
-        Rota rota = new Rota();
+		Empresa empresa = empresaRepository.findById(empresaId)
+				.orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada"));
 
-        rota.setDescricao(request.getDescricao());
+		Rota rota = new Rota();
 
-        rota.setAtiva(
-                request.getAtiva() == null
-                        ? true
-                        : request.getAtiva());
+		rota.setEmpresa(empresa);
 
-        adicionarPassageiros(rota,
-                request.getPassageiros());
+		if (rotaRepository.existsByDescricaoIgnoreCaseAndEmpresaId(request.getDescricao(), empresaId)) {
 
-        rota = rotaRepository.save(rota);
+			throw new BusinessException("Já existe uma rota com esta descrição.");
+		}
 
-        return rotaMapper.toResponse(rota);
-    }
+		rota.setDescricao(request.getDescricao());
 
-    public RotaResponseDto atualizar(
-            Long id,
-            RotaRequestDto request) {
+		rota.setAtiva(request.getAtiva() == null ? true : request.getAtiva());
 
-        Rota rota = buscarEntidade(id);
+		rota = rotaRepository.save(rota);
 
-        rota.setDescricao(request.getDescricao());
+		return rotaMapper.toResponse(rota);
+	}
 
-        rota.setAtiva(request.getAtiva());
+	
 
-        rota.getPassageiros().clear();
+	public RotaResponseDto atualizar(Long id, RotaRequestDto request) {
+		
+		validarResponsabilidadeDoUsuarioLogado();
 
-        adicionarPassageiros(
-                rota,
-                request.getPassageiros());
 
-        rota = rotaRepository.save(rota);
+		Rota rota = buscarEntidade(id);
 
-        return rotaMapper.toResponse(rota);
-    }
+		rota.setDescricao(request.getDescricao());
 
-    @Transactional(readOnly = true)
-    public RotaResponseDto buscarPorId(Long id) {
+		rota.setAtiva(request.getAtiva());
 
-        return rotaMapper.toResponse(
-                buscarEntidade(id));
-    }
+		rota.getPassageiros().clear();
 
-    @Transactional(readOnly = true)
-    public List<RotaResponseDto> listar() {
+		rota = rotaRepository.save(rota);
 
-        return rotaRepository.findAll()
-                .stream()
-                .map(rotaMapper::toResponse)
-                .toList();
-    }
+		return rotaMapper.toResponse(rota);
+	}
 
-    public void excluir(Long id) {
+	@Transactional(readOnly = true)
+	public RotaResponseDto buscarPorId(Long id) {
 
-        Rota rota = buscarEntidade(id);
+		validarResponsabilidadeDoUsuarioLogado();
 
-        rota.setAtiva(false);
+		
+		return rotaMapper.toResponse(buscarEntidade(id));
+	}
 
-        rotaRepository.save(rota);
-    }
+	@Transactional(readOnly = true)
+	public List<RotaResponseDto> listar() {
+		
+		validarResponsabilidadeDoUsuarioLogado();
 
-    private Rota buscarEntidade(Long id) {
 
-        return rotaRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Rota não encontrada."));
-    }
+		Long empresaId = userLogado.getEmpresaId();
 
-    private void adicionarPassageiros(
-            Rota rota,
-            List<RotaFuncionarioRequestDto> passageiros) {
+		return rotaRepository.findByEmpresaIdOrderByDescricaoAsc(empresaId).stream().map(rotaMapper::toResponse)
+				.toList();
+	}
 
-        if (passageiros == null) {
-            return;
-        }
+	public void excluir(Long id) {
+		
+		validarResponsabilidadeDoUsuarioLogado();
 
-        for (RotaFuncionarioRequestDto dto : passageiros) {
 
-            Funcionario funcionario =
-                    funcionarioRepository.findById(
-                            dto.getFuncionarioId())
-                            .orElseThrow(() ->
-                                    new ResourceNotFoundException(
-                                            "Funcionário não encontrado: "
-                                                    + dto.getFuncionarioId()));
+		Rota rota = buscarEntidade(id);
 
-            RotaFuncionario passageiro =
-                    new RotaFuncionario();
+		rota.setAtiva(false);
 
-            passageiro.setRota(rota);
+		rotaRepository.save(rota);
+	}
 
-            passageiro.setFuncionario(funcionario);
+	private Rota buscarEntidade(Long id) {
 
-            passageiro.setOrdem(dto.getOrdem());
+		Long empresaId = userLogado.getEmpresaId();
 
-            passageiro.setAtivo(
-                    dto.getAtivo() == null
-                            ? true
-                            : dto.getAtivo());
+		return rotaRepository.findByIdAndEmpresaId(id, empresaId)
+				.orElseThrow(() -> new ResourceNotFoundException("Rota não encontrada"));
+	}
+	
+	private void validarResponsabilidadeDoUsuarioLogado() {
+		if (!userLogado.hasRole(Role.ROLE_GESTOR_ROTA)) {
+		    throw new AccessDeniedException(
+		        "Acesso negado");
+		}
+		
+	}
 
-            rota.addPassageiro(passageiro);
-        }
-    }
 }

@@ -9,6 +9,7 @@ import com.cilazatta.frotacontrol.dto.VeiculoResponseDto;
 import com.cilazatta.frotacontrol.entity.Empresa;
 import com.cilazatta.frotacontrol.entity.Veiculo;
 import com.cilazatta.frotacontrol.enums.Role;
+import com.cilazatta.frotacontrol.exeptions.AccessDeniedException;
 import com.cilazatta.frotacontrol.exeptions.BusinessException;
 import com.cilazatta.frotacontrol.exeptions.ResourceNotFoundException;
 import com.cilazatta.frotacontrol.mapper.VeiculoMapper;
@@ -37,14 +38,16 @@ public class VeiculoService {
 	public VeiculoResponseDto salvar(VeiculoRequestDto request) {
 		
 		if (!userLogado.hasRole(Role.ROLE_GESTOR_ROTA)) {
-		    throw new RuntimeException("Acesso negado");
+		    throw new AccessDeniedException(
+		        "Acesso negado. Apenas Gestor de Rota pode realizar esta operação."
+		    );
 		}
 		
 		Empresa empresa = empresaRepository.findById(userLogado.getEmpresaId())
 				.orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada"));
 
 
-		validarPlaca(request.getPlaca());
+		validarPlaca(request.getPlaca(), userLogado.getEmpresaId());
 
 		Veiculo veiculo = mapper.toEntity(request);
 		
@@ -68,14 +71,16 @@ public class VeiculoService {
 
 	public VeiculoResponseDto buscarPorId(Long id) {
 
-		return mapper.toResponse(buscarEntidade(id));
-	}
+	    Long empresaId = userLogado.getEmpresaId();
 
-	public VeiculoResponseDto buscarPorIdAndEmpresaId(Long id, Long empresaId) {
-		
-		return mapper.toResponse(buscarEntidadeByEmpresa(id, empresaId));
-	}
+	    Veiculo veiculo = repository
+	            .findByIdAndEmpresaId(id, empresaId)
+	            .orElseThrow(() ->
+	                    new ResourceNotFoundException(
+	                            "Veículo não encontrado para a empresa do usuário"));
 
+	    return mapper.toResponse(veiculo);
+	}
 
 	public List<VeiculoResponseDto> listar() {
 		Long empresaId = userLogado.getEmpresaId(); 
@@ -109,13 +114,13 @@ public class VeiculoService {
 		return repository.findByIdAndEmpresaId(id, empresaId).orElseThrow(() -> new ResourceNotFoundException("Veículo não encontrado"));
 	}
 
-	private void validarPlaca(String placa) {
-
-		if (repository.existsByPlaca(placa)) {
-
-			throw new BusinessException("Placa já cadastrada");
-		}
-	}
+//	private void validarPlaca(String placa) {
+//
+//		if (repository.existsByPlaca(placa)) {
+//
+//			throw new BusinessException("Placa já cadastrada");
+//		}
+//	}
 
 	private void validarPlaca(String placa, Long empresaId) {
 		

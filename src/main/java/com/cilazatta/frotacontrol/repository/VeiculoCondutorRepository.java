@@ -4,8 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import com.cilazatta.frotacontrol.entity.Veiculo;
 import com.cilazatta.frotacontrol.entity.VeiculoCondutor;
+import com.cilazatta.frotacontrol.enums.VeiculoStatus;
 
 public interface VeiculoCondutorRepository extends JpaRepository<VeiculoCondutor, Long> {
 
@@ -80,4 +84,25 @@ public interface VeiculoCondutorRepository extends JpaRepository<VeiculoCondutor
     boolean existsByVeiculoIdAndFuncionarioIdAndAtivoTrue(
             Long veiculoId,
             Long funcionarioId);
+    
+
+    // ... (mantenha os outros métodos)
+
+    /**
+     * Busca os veículos que o funcionário pode dirigir filtrados por empresa e vínculo ativo.
+     */
+    @Query("SELECT v FROM VeiculoCondutor vc " +
+            "JOIN vc.veiculo v " +
+            "WHERE vc.funcionario.id = :funcionarioId " +
+            "AND vc.funcionario.empresa.id = :empresaId " +
+            "AND vc.ativo = true " +
+            "AND v.status = :status")
+     List<Veiculo> findVeiculosAutorizadosPorStatus(
+         @Param("funcionarioId") Long funcionarioId, 
+         @Param("empresaId") Long empresaId,
+         @Param("status") VeiculoStatus status
+     );
+
+    
+    
 }

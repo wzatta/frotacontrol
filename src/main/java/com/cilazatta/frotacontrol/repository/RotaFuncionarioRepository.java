@@ -11,5 +11,10 @@ public interface RotaFuncionarioRepository extends JpaRepository<RotaFuncionario
 	List<RotaFuncionario> findByRotaIdOrderByOrdem(Long rotaId);
 
 	boolean existsByRotaIdAndFuncionarioId(Long rotaId, Long funcionarioId);
+	
+	boolean existsByFuncionarioIdAndRotaAtivaTrueAndRotaEmpresaId(
+	        Long funcionarioId,
+	        Long empresaId
+	);
 
 }

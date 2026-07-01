@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.cilazatta.frotacontrol.dto.RegisterRequestDto;
+import com.cilazatta.frotacontrol.dto.UsuarioRequestDto;
 import com.cilazatta.frotacontrol.entity.Funcionario;
 import com.cilazatta.frotacontrol.entity.Usuario;
 
@@ -18,7 +18,7 @@ public class RegisterRequestMapper {
 	        this.passwordEncoder = passwordEncoder;
 	    }
 
-	public Usuario toEntity(RegisterRequestDto dto, Funcionario colaborador) {
+	public Usuario toEntity(UsuarioRequestDto dto, Funcionario colaborador) {
 	    return Usuario.builder()
 	            .funcionario(colaborador)
 	            .name(dto.getName())

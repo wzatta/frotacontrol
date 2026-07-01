@@ -1,6 +1,8 @@
 package com.cilazatta.frotacontrol.entity;
 
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -37,6 +39,12 @@ public class Funcionario extends BaseEntity {
     private String uf;
 
     private String cep;
+    
+    @Column(precision = 10, scale = 6)
+    private BigDecimal latitude;
+
+    @Column(precision = 10, scale = 6)
+    private BigDecimal longitude;
 
     @Column(nullable = false)
     private Boolean ativo = true;

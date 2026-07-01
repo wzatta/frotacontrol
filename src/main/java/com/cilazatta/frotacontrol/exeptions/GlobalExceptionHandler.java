@@ -62,6 +62,12 @@ public class GlobalExceptionHandler {
 
 		return buildResponse(HttpStatus.BAD_REQUEST, "Violação de integridade dos dados.");
 	}
+	
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex) {
+
+	    return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage());
+	}
 
 	private ResponseEntity<Object> buildResponse(HttpStatus status, String message) {
 

@@ -62,8 +62,15 @@ public class JwtService {
 	        .map(auth -> auth.getAuthority())
 	        .toList());
 	    
-	    claims.put("empresaId", usuario.getFuncionario().getEmpresa().getId());
+	    claims.put("usuarioId", usuario.getId());
+	    claims.put("empresaId", usuario.getEmpresa().getId());
 	    claims.put("denominacao", usuario.getFuncionario().getEmpresa().getNomeFantasia());
+	    
+	    if (usuario.getFuncionario() != null) {
+	        claims.put("funcionarioId", usuario.getFuncionario().getId());
+	        claims.put("nomeCompleto", usuario.getFuncionario().getNome());
+	        
+	    }
 
 
 	    return generateToken(claims, userDetails);

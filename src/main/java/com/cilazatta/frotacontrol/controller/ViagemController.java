@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cilazatta.frotacontrol.dto.ViagemAbertaResponseDto;
+import com.cilazatta.frotacontrol.dto.ViagemAbrirRequestDto;
 import com.cilazatta.frotacontrol.dto.ViagemEncerrarRequestDto;
 import com.cilazatta.frotacontrol.dto.ViagemRequestDto;
 import com.cilazatta.frotacontrol.dto.ViagemResponseDto;
@@ -22,7 +24,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/viagens")
+@RequestMapping("/api/v1/viagens")
 @RequiredArgsConstructor
 public class ViagemController {
 
@@ -39,6 +41,12 @@ public class ViagemController {
                 .status(HttpStatus.CREATED)
                 .body(service.abrirViagem(request));
     }
+    
+    @PostMapping("/reservar")
+    public ResponseEntity<ViagemAbertaResponseDto> reservarViagem(@RequestBody @Valid ViagemAbrirRequestDto dto) {
+        // O id do motorista e da empresa NÃO vêm no DTO, serão pegos no Service via Contexto de Segurança
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.reservarViagem(dto));
+    }
 
     // =========================================
     // ENCERRAR VIAGEM
@@ -50,6 +58,17 @@ public class ViagemController {
 
         return ResponseEntity.ok(
                 service.encerrarViagem(id, request));
+    }
+    // =========================================
+    // ENCERRAR VIAGEM
+    // =========================================
+    @PutMapping("/{id}/cancelar")
+    public ResponseEntity<ViagemResponseDto> cancelarViagem(
+    		@PathVariable Long id,
+    		@RequestBody @Valid ViagemEncerrarRequestDto request) {
+    	
+    	return ResponseEntity.ok(
+    			service.cancelarViagem(id, request));
     }
 
     // =========================================

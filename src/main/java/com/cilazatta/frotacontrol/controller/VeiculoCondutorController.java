@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cilazatta.frotacontrol.dto.VeiculoAutorizadoDto;
 import com.cilazatta.frotacontrol.dto.VeiculoCondutorRequestDto;
 import com.cilazatta.frotacontrol.dto.VeiculoCondutorResponseDto;
 import com.cilazatta.frotacontrol.service.VeiculoCondutorService;
@@ -23,7 +24,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/veiculos-condutores")
+@RequestMapping("/api/v1/veiculos-condutores")
 @RequiredArgsConstructor
 @Validated
 public class VeiculoCondutorController {
@@ -66,5 +67,19 @@ public class VeiculoCondutorController {
 
 		return ResponseEntity.noContent().build();
 	}
+	
+	 /**
+     * Retorna a lista de veículos autorizados para um motorista específico em uma empresa.
+     * Exemplo de chamada: GET /api/v1/veiculos-autorizados?funcionarioId=5&empresaId=1
+     */
+    @GetMapping
+    public ResponseEntity<List<VeiculoAutorizadoDto>> listarVeiculosAutorizados() {
+
+        List<VeiculoAutorizadoDto> response = service
+                .listarVeiculosAutorizadosParaMotorista();
+        return ResponseEntity.ok(response);
+    }
+	
+	
 
 }

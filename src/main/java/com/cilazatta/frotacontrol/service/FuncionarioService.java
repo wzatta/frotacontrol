@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import com.cilazatta.frotacontrol.dto.FuncionarioRequestDto;
 import com.cilazatta.frotacontrol.dto.FuncionarioRequestUpdateDto;
 import com.cilazatta.frotacontrol.dto.FuncionarioResponseDto;
+import com.cilazatta.frotacontrol.dto.FuncionarioRquestByCepDto;
+import com.cilazatta.frotacontrol.dto.GeolocalizacaoResponseDto;
+import com.cilazatta.frotacontrol.dto.ViaCepResponseDto;
 import com.cilazatta.frotacontrol.entity.Empresa;
 import com.cilazatta.frotacontrol.entity.Funcionario;
 import com.cilazatta.frotacontrol.enums.Role;
@@ -22,15 +25,21 @@ public class FuncionarioService {
 
 	private final FuncionarioRepository repository;
 	private final EmpresaRepository empresaRepository;
+	private final GeolocalizacaoService geoService;
+	private final CepService cepService;
 	private final FuncionarioMapper mapper;
 	private final UsuarioLogadoService userLogado;
 
 	public FuncionarioService(FuncionarioRepository repository, 
+			CepService cepService,
+			GeolocalizacaoService geoService,
 			UsuarioLogadoService userLogado,
 			EmpresaRepository empresaRepository,
 			FuncionarioMapper mapper) {
 		super();
 		this.repository = repository;
+		this.cepService = cepService;
+		this.geoService = geoService;
 		this.empresaRepository = empresaRepository;
 		this.mapper = mapper;
 		this.userLogado = userLogado;
@@ -40,9 +49,6 @@ public class FuncionarioService {
 
 		Empresa empresa = this.verificarEmpresa(request);
 		
-//		Empresa empresa = empresaRepository.findById(request.getEmpresaId())
-//				.orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada"));
-
 		validarMatricula(request.getMatricula());
 
 		Funcionario funcionario = mapper.toEntity(request);
@@ -51,6 +57,44 @@ public class FuncionarioService {
 		
 		funcionario = repository.save(funcionario);
 
+		return mapper.toResponse(funcionario);
+	}
+
+	public FuncionarioResponseDto salvarViaCep(FuncionarioRquestByCepDto request) {
+		
+		Empresa empresa = this.verificarEmpresa(request.getEmpresaId());
+		
+		validarMatricula(request.getMatricula());
+		
+		 ViaCepResponseDto endereco =
+		            cepService.buscarCep(request.getCep());
+		 
+		 GeolocalizacaoResponseDto geo =
+			        geoService.buscarCoordenadas(
+			                endereco.getLogradouro(),
+			                request.getNumero(),
+			                endereco.getBairro(),
+			                endereco.getLocalidade(),
+			                endereco.getUf(),
+			                endereco.getCep()
+			        		);
+		 
+		 
+		
+		Funcionario funcionario = mapper.toEntityByCep(request);
+		
+		funcionario.setLatitude(geo.getLat());
+		funcionario.setLongitude(geo.getLon());
+		
+		funcionario.setEmpresa(empresa);
+		
+		funcionario.setLogradouro(endereco.getLogradouro());
+		funcionario.setBairro(endereco.getBairro());
+		funcionario.setCidade(endereco.getLocalidade());
+		funcionario.setUf(endereco.getUf());
+		
+		funcionario = repository.save(funcionario);
+		
 		return mapper.toResponse(funcionario);
 	}
 
@@ -126,6 +170,32 @@ public class FuncionarioService {
 
 	    return empresaRepository.findById(empresaId)
 	            .orElseThrow(() -> new RuntimeException("Empresa não encontrada"));
+	}
+	private Empresa verificarEmpresa(Long empresaIdDto) {
+		
+		List<Role> roles = userLogado.getRoles();
+		
+		boolean isAdmin = roles.contains(Role.ROLE_ADMIN);
+		boolean isAdminEmpresa = roles.contains(Role.ROLE_ADMIN_EMPRESA);
+		
+		Long empresaId;
+		
+		if (isAdmin) {
+			empresaId = empresaIdDto;
+			
+			if (empresaId == null) {
+				throw new RuntimeException("ADMIN deve informar empresaId");
+			}
+			
+		} else if (isAdminEmpresa) {
+			empresaId = userLogado.getEmpresaId();
+			
+		} else {
+			throw new RuntimeException("Usuário sem permissão para definir empresa");
+		}
+		
+		return empresaRepository.findById(empresaId)
+				.orElseThrow(() -> new RuntimeException("Empresa não encontrada"));
 	}
 
 }

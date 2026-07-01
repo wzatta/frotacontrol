@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cilazatta.frotacontrol.dto.AutheticateRequestDto;
 import com.cilazatta.frotacontrol.dto.AutheticationResponseDto;
-import com.cilazatta.frotacontrol.dto.RegisterRequestDto;
+import com.cilazatta.frotacontrol.dto.UsuarioRequestDto;
 import com.cilazatta.frotacontrol.security.service.AutheticationService;
 
 import jakarta.validation.Valid;
@@ -25,7 +25,7 @@ public class AutheticationController {
 	
 	@PostMapping("/register")
 	public ResponseEntity<AutheticationResponseDto> register(
-			@RequestBody RegisterRequestDto requestRegister
+			@RequestBody UsuarioRequestDto requestRegister
 			){
 		return ResponseEntity.ok(service.register(requestRegister));
 	}

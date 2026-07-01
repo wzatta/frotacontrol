@@ -35,9 +35,9 @@ public class ViagemResponseDto {
 
     private StatusViagem status;
 
-    private LocalDateTime dataHoraSaida;
+    private LocalDateTime dataHoraAbertura;
 
-    private LocalDateTime dataHoraChegada;
+    private LocalDateTime dataHoraEncerramento;
 
     private List<ViagemParticipanteResponseDto>
             participantes;

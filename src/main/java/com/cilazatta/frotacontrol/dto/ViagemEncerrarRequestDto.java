@@ -1,6 +1,8 @@
 package com.cilazatta.frotacontrol.dto;
 
 
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -12,10 +14,10 @@ public class ViagemEncerrarRequestDto {
     private Long kmFinal;
 
     @NotNull(message = "Latitude final é obrigatória")
-    private Double latitudeFim;
+    private BigDecimal latitudeFim;
 
     @NotNull(message = "Longitude final é obrigatória")
-    private Double longitudeFim;
+    private BigDecimal longitudeFim;
  
     @NotBlank
     private String urlFotoPainel;
